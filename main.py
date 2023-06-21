@@ -1,6 +1,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import math
+from scipy.optimize import curve_fit
+
+
+def properr(a, b, ea, eb):
+    err = math.sqrt((ea/a)**2 + (eb/b)**2)
+    return err
+
+
+def properr2(ea, eb):
+    err = math.sqrt(ea**2 + eb**2)
+    return err
 
 
 def media_varianza_min_max(arr):
@@ -77,9 +89,33 @@ def find_line_intersection(point1, point2, point3, point4):
     return x_intersez, y_interez
 
 
+def deltatstr(medie):
+    # x è 35 mentre meds[0] è t12
+    # x è 36 mentre meds[2] è t22
+    # x è 35 mentre meds[1] è t11
+    # x è 36 mentre meds[3] è t21
+    etstar = 0.00001 * ((properr2(medie[2]-medie[0], medie[3]-medie[1]) + properr2(medie[2]-medie[3], medie[0]-medie[1])) / (medie[2]-medie[3]-medie[0]+medie[1])**2)
+    print("L'errore su tstar è:", etstar)
+    return etstar
+
+
+def curvfunc(a, b, t):
+    return t*a+b
+
+
+def curvfunc2(a, b, t):
+    k=[]
+    for item in t:
+        k.append(a*item + b)
+    return k
+
+
 meds = []
 intervalli = [35, 36, 37, 39]
 
+print("")
+
+print("Punto 3-4")
 apri("venv/35conf1.csv", 1, meds)
 apri("venv/35conf2.csv", 2, meds)
 apri("venv/36conf1.csv", 1, meds)
@@ -89,21 +125,53 @@ apri("venv/37conf2.csv", 2, meds)
 apri("venv/39conf1.csv", 1, meds)
 apri("venv/39conf2.csv", 2, meds)
 
-#  Questa funcione plotta _E_ mette le barre di errore sui punti che plotta
-plt.errorbar(intervalli, meds[::2], xerr=0.1, fmt='o')
-plt.errorbar(intervalli, meds[1::2], xerr=0.1, fmt='o', color='red')
+print("")
 
+print("Punto 5")
+#  Questa funcione plotta _E_ mette le barre di errore sui punti che plotta
+#  yerr è l'errore dei fotogate che al momento mi sfugge
+plt.errorbar(intervalli, meds[::2], xerr=0.2, yerr=0.01, fmt='o', label='Peso aggiuntivo sul basso')
+plt.errorbar(intervalli, meds[1::2], xerr=0.002, yerr=0.01, fmt='o', color='red', label='Peso aggiuntivo in alto')
+print("Questa funzione grafica e basta")
+print("")
+
+print("Punto 6")
 lrossa, lblue = linee(intervalli, meds[0], meds[1], meds[3], meds[4], 35, 36)
 
-p1 = (intervalli[0], meds[0])
-p2 = (intervalli[1], meds[2])
-p3 = (intervalli[0], meds[1])
-p4 = (intervalli[1], meds[3])
+p1 = (intervalli[0], meds[0])  # x è 35 mentre meds[0] è t12
+p2 = (intervalli[1], meds[2])  # x è 36 mentre meds[2] è t22
+p3 = (intervalli[0], meds[1])  # x è 35 mentre meds[1] è t11
+p4 = (intervalli[1], meds[3])  # x è 36 mentre meds[3] è t21
+print("Ecco i dati: ")
 tstar = find_line_intersection(p1, p2, p3, p4)
+Etstar = 0
 
 plt.plot(tstar[0], tstar[1], '*k', label="Punto di intersezione")
 plt.plot(intervalli, lrossa, color='#f07167')
 plt.plot(intervalli, lblue, color='#0096c7')
+plt.legend(loc='best')
 plt.show()
 
 print("Da cui ricaviamo g: ", 4*np.pi**2*0.994/(tstar[1]**2))
+print("")
+
+print("Punto 7-8")
+deltatstr(meds)
+print("")
+
+print("Punto 9")
+
+popt, pcov = curve_fit(curvfunc, meds[::2], intervalli)
+xa, xb = popt
+print("La prima curva è data da y =", xa, "x", "+", xb)
+print("Gli errori sono: ", np.sqrt(np.diag(pcov)))
+print("Il fattore di cov(A,B) è", pcov[0][1], "Mentre quello di cov(B,A) è", pcov[1][0])
+popt2, pcov2 = curve_fit(curvfunc, meds[1::2], intervalli)
+xa2, xb2 = popt2
+print("La seconda curva è data da y =", xa2, "x", "+", xb2)
+print("Gli errori sono: ", np.sqrt(np.diag(pcov2)))
+print("Il fattore di cov(A,B) è", pcov2[0][1], "Mentre quello di cov(B,A) è", pcov2[1][0])
+
+print("")
+tstar2 = (xb2-xb)/(xa-xa2)
+print("Ricalcolando t* con questo nuovo metodo otteniamo")
