@@ -111,6 +111,13 @@ def curvfunc2(a, b, t):
     return k
 
 
+def abline(slope, intercept):
+    assi = plt.gca()
+    x_vals = np.array(assi.get_xlim())
+    y_vals = intercept + slope * x_vals
+    plt.plot(x_vals, y_vals, '--')
+
+
 meds = []
 intervalli = [35, 36, 37, 39]
 
@@ -137,7 +144,7 @@ print("Questa funzione grafica e basta")
 print("")
 
 print("Punto 6")
-lrossa, lblue = linee(intervalli, meds[0], meds[1], meds[3], meds[4], 35, 36)
+lrossa, lblue = linee(intervalli, meds[0], meds[1], meds[3], meds[2], 35, 36)
 
 p1 = (intervalli[0], meds[0])  # x è 35 mentre meds[0] è t12
 p2 = (intervalli[1], meds[2])  # x è 36 mentre meds[2] è t22
@@ -147,10 +154,12 @@ print("Ecco i dati: ")
 tstar = find_line_intersection(p1, p2, p3, p4)
 etstar = deltatstr(meds)
 
-plt.plot(intervalli, lrossa, color='#0096c7')
-plt.plot(intervalli, lblue, color='#f07167')
-plt.errorbar(tstar[0], tstar[1], marker='*', label="t*", color='k', xerr=0.2, yerr=etstar)
+#  plt.plot(intervalli, lrossa, color='#0096c7')
+#  plt.plot(intervalli, lblue, color='#f07167')
+#  plt.errorbar(tstar[0], tstar[1], marker='*', label="t*", color='k', xerr=0.2, yerr=etstar)
 plt.legend(loc='best')
+plt.xlabel("Distanza massa mobile (cm)")
+plt.ylabel("Tempi di oscillazione (s)")
 plt.show()
 
 print("Da cui ricaviamo g: ", 4*np.pi**2*0.994/(tstar[1]**2))
@@ -180,3 +189,20 @@ etstar2 = ((-xa+xa2)/(-xb2+xb)**2)**2*(exa**2+exa2**2)
 etstar2 = etstar2 + (1/(-xb2+xb))**2*(exb**2+exb2**2)
 etstar2 = etstar2 + 2*((-xa+xa2)/(-xb2+xb)**3)*(pcov[0][1]+pcov[0][1])
 print("L'errore su t*2 è", etstar2)
+
+
+plt.plot(intervalli, lrossa, color='#0096c7')
+plt.plot(intervalli, lblue, color='#f07167')
+plt.errorbar(tstar[0], tstar[1], marker='*', label="t*", color='k', xerr=0.2, yerr=etstar)
+plt.errorbar(intervalli[:2:], meds[:4:2], xerr=0.2, yerr=0.00001, fmt='o', label='Peso aggiuntivo sul basso')
+plt.errorbar(intervalli[:2:], meds[1:4:2], xerr=0.2, yerr=0.00001, fmt='o', color='red', label='Peso aggiuntivo in alto')
+plt.xlim(34.8, 36.5)
+plt.legend(loc='lower left')
+plt.xlabel("Distanza massa mobile (cm)")
+plt.ylabel("Tempi di oscillazione (s)")
+plt.show()
+
+abline(-908.7701156218333-908.7701156218333, 1852.27319670493)
+plt.xlim(34.8, 36.5)
+plt.ylim(0,4)
+plt.show()
