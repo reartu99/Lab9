@@ -104,7 +104,7 @@ def curvfunc(a, b, t):
 
 
 def curvfunc2(a, b, t):
-    k=[]
+    k = []
     for item in t:
         k.append(a*item + b)
     return k
@@ -130,8 +130,8 @@ print("")
 print("Punto 5")
 #  Questa funcione plotta _E_ mette le barre di errore sui punti che plotta
 #  yerr è l'errore dei fotogate che al momento mi sfugge
-plt.errorbar(intervalli, meds[::2], xerr=0.2, yerr=0.01, fmt='o', label='Peso aggiuntivo sul basso')
-plt.errorbar(intervalli, meds[1::2], xerr=0.002, yerr=0.01, fmt='o', color='red', label='Peso aggiuntivo in alto')
+plt.errorbar(intervalli, meds[::2], xerr=0.2, yerr=0.00001, fmt='o', label='Peso aggiuntivo sul basso')
+plt.errorbar(intervalli, meds[1::2], xerr=0.2, yerr=0.00001, fmt='o', color='red', label='Peso aggiuntivo in alto')
 print("Questa funzione grafica e basta")
 print("")
 
@@ -144,19 +144,15 @@ p3 = (intervalli[0], meds[1])  # x è 35 mentre meds[1] è t11
 p4 = (intervalli[1], meds[3])  # x è 36 mentre meds[3] è t21
 print("Ecco i dati: ")
 tstar = find_line_intersection(p1, p2, p3, p4)
-Etstar = 0
+etstar = deltatstr(meds)
 
-plt.plot(tstar[0], tstar[1], '*k', label="Punto di intersezione")
 plt.plot(intervalli, lrossa, color='#f07167')
 plt.plot(intervalli, lblue, color='#0096c7')
+plt.errorbar(tstar[0], tstar[1], marker='*', label="t*", color='k', xerr=0.2, yerr=etstar)
 plt.legend(loc='best')
 plt.show()
 
 print("Da cui ricaviamo g: ", 4*np.pi**2*0.994/(tstar[1]**2))
-print("")
-
-print("Punto 7-8")
-deltatstr(meds)
 print("")
 
 print("Punto 9")
@@ -164,14 +160,22 @@ print("Punto 9")
 popt, pcov = curve_fit(curvfunc, meds[::2], intervalli)
 xa, xb = popt
 print("La prima curva è data da y =", xa, "x", "+", xb)
-print("Gli errori sono: ", np.sqrt(np.diag(pcov)))
+exa, exb = np.sqrt(np.diag(pcov))
+print("Gli errori sono: ", exa, exb)
 print("Il fattore di cov(A,B) è", pcov[0][1], "Mentre quello di cov(B,A) è", pcov[1][0])
 popt2, pcov2 = curve_fit(curvfunc, meds[1::2], intervalli)
 xa2, xb2 = popt2
 print("La seconda curva è data da y =", xa2, "x", "+", xb2)
-print("Gli errori sono: ", np.sqrt(np.diag(pcov2)))
+exa2, exb2 = np.sqrt(np.diag(pcov2))
+print("Gli errori sono: ", exa2, exb2)
 print("Il fattore di cov(A,B) è", pcov2[0][1], "Mentre quello di cov(B,A) è", pcov2[1][0])
 
 print("")
-tstar2 = (xb2-xb)/(xa-xa2)
-print("Ricalcolando t* con questo nuovo metodo otteniamo")
+tstar2 = (-xa+xa2)/(-xb2+xb)  # Inverito la formula poichè abbiamo fittato x sui tempi
+print("Ricalcolando t* con questo nuovo metodo otteniamo: ", tstar2)
+print("Da cui ricaviamo g:", 4*np.pi**2*0.994/(tstar2**2))
+
+etstar2 = ((-xa+xa2)/(-xb2+xb)**2)**2*(exa**2+exa2**2)
+etstar2 = etstar2 + (1/(-xb2+xb))**2*(exb**2+exb2**2)
+etstar2 = etstar2 + 2*((-xa+xa2)/(-xb2+xb)**3)*(pcov[0][1]+pcov[0][1])
+print("L'errore su t*2 è", etstar2)
