@@ -26,15 +26,16 @@ def media_varianza_min_max(arr):
 
 
 def histog(arr, orient, nome):
-    nbins = int(np.ceil(np.log2(len(arr)))) + 1  # Scegliamo il numero di bins con la regola di Stourges
+    nbins = int(np.ceil(np.log2(len(arr))))  # Scegliamo il numero di bins con la regola di Stourges
 
     if orient == 1:
         colors = 'red'
     else:
         colors = 'blue'
 
-    plt.hist(arr, bins=nbins, color=colors)
+    plt.hist(arr, bins=nbins, color=colors, alpha=0.5, histtype='bar', ec='black')
     plt.title("Distanza " + nome[5:7:] + " cm " + "configurazione " + nome[11:12:])
+    plt.xlabel("tempi di oscillazione")
     plt.show()
     print("Distanza (cm): " + nome[5:7:])
 
