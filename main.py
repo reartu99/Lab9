@@ -201,8 +201,3 @@ plt.legend(loc='lower left')
 plt.xlabel("Distanza massa mobile (cm)")
 plt.ylabel("Tempi di oscillazione (s)")
 plt.show()
-
-abline(-908.7701156218333-908.7701156218333, 1852.27319670493)
-plt.xlim(34.8, 36.5)
-plt.ylim(0,4)
-plt.show()
