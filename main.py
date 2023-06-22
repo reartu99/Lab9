@@ -181,7 +181,7 @@ print("Gli errori sono: ", exa2, exb2)
 print("Il fattore di cov(A,B) è", pcov2[0][1], "Mentre quello di cov(B,A) è", pcov2[1][0])
 
 print("")
-tstar2 = (-xa+xa2)/(-xb2+xb)  # Inverito la formula poichè abbiamo fittato x sui tempi
+tstar2 = (-xa+xa2)/(-xb2+xb)
 print("Ricalcolando t* con questo nuovo metodo otteniamo: ", tstar2)
 print("Da cui ricaviamo g:", 4*np.pi**2*0.994/(tstar2**2))
 
